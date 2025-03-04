@@ -16,7 +16,8 @@
 		"storage"
 	],
 	"host_permissions": [
-		"https://*.supabase.co/*"
+		"https://*.supabase.co/*",
+		"https://accounts.google.com/*"
 	],
 	"icons": {
 		"16": "icons/icon16.png",

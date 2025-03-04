@@ -11,56 +11,53 @@ export function Auth() {
 
 			// Chrome拡張機能のリダイレクトURLを取得
 			const redirectUrl = chrome.identity.getRedirectURL();
-			console.log('Redirect URL:', redirectUrl);
+			console.log('リダイレクトURL:', redirectUrl);
 
-			const { data, error } = await supabase.auth.signInWithOAuth({
-				provider: 'google',
-				options: {
-					redirectTo: redirectUrl,
+			// scopeにopenidを追加
+			const authUrl = `https://accounts.google.com/o/oauth2/auth?` +
+				`client_id=986403064183-vchad99v07ql6sgvs0u7md45iini9l3a.apps.googleusercontent.com` +
+				`&response_type=id_token token` + // id_tokenを追加
+				`&redirect_uri=${encodeURIComponent(redirectUrl)}` +
+				`&scope=${encodeURIComponent('openid email profile')}`; // openidを追加
+
+			console.log('認証URL:', authUrl);
+
+			chrome.identity.launchWebAuthFlow({
+				url: authUrl,
+				interactive: true
+			}, async (callbackUrl) => {
+				console.log('コールバック結果:', callbackUrl);
+
+				if (chrome.runtime.lastError || !callbackUrl) {
+					console.error('認証エラー:', chrome.runtime.lastError);
+					alert('認証中にエラーが発生しました。');
+					setLoading(false);
+					return;
 				}
+
+				const params = new URLSearchParams(
+					callbackUrl.includes('#')
+						? callbackUrl.split('#')[1]
+						: callbackUrl.split('?')[1]
+				);
+
+				// id_tokenを取得
+				const idToken = params.get('id_token');
+
+				if (idToken) {
+					const { error } = await supabase.auth.signInWithIdToken({
+						provider: 'google',
+						token: idToken,
+					});
+
+					if (error) throw error;
+				}
+
+				setLoading(false);
 			});
 
-			if (error) throw error;
-
-			// OAuth URL取得後、Chrome拡張機能向けの認証処理
-			if (data?.url) {
-				chrome.identity.launchWebAuthFlow({
-					url: data.url,
-					interactive: true
-				}, async (callbackUrl) => {
-					if (chrome.runtime.lastError || !callbackUrl) {
-						console.error('Authentication error:', chrome.runtime.lastError);
-						alert('認証中にエラーが発生しました。');
-						setLoading(false);
-						return;
-					}
-
-					// URLからハッシュフラグメントまたはクエリパラメータを抽出
-					const params = new URLSearchParams(
-						callbackUrl.includes('#')
-							? callbackUrl.split('#')[1]
-							: callbackUrl.split('?')[1]
-					);
-
-					// アクセストークンを処理
-					if (params.has('access_token')) {
-						const accessToken = params.get('access_token');
-						const refreshToken = params.get('refresh_token');
-
-						// セッション設定
-						const { error } = await supabase.auth.setSession({
-							access_token: accessToken!,
-							refresh_token: refreshToken!
-						});
-
-						if (error) throw error;
-					}
-
-					setLoading(false);
-				});
-			}
 		} catch (error) {
-			console.error('Error logging in with Google:', error);
+			console.error('認証エラー:', error);
 			alert('Google ログインでエラーが発生しました。');
 			setLoading(false);
 		}
