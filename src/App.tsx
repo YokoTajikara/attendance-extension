@@ -21,7 +21,7 @@ function App() {
 	}, []);
 
 	return (
-		<div className="w-full h-full max-w-md mx-auto overflow-hidden bg-white" style={{ width: '400px', height: '400px' }}>
+		<div className="w-full h-full max-w-md mx-auto overflow-hidden bg-white" style={{ width: '400px', height: '100%' }}>
 			{!session ? <Auth /> : <AttendanceManager />}
 		</div>
 	);
