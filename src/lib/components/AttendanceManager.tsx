@@ -146,9 +146,6 @@ export function AttendanceManager() {
 					modifiers={{
 						attended: (day) => hasAttendanceRecord(day),
 					}}
-					modifiersStyles={{
-						attended: { backgroundColor: '#d1fae5', color: '#065f46' }
-					}}
 				/>
 			</div>
 
