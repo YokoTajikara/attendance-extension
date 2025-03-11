@@ -6,10 +6,13 @@ import { Button } from './ui/Button';
 import { supabase } from '../../lib/supabase';
 import { cn } from '../../lib/utils';
 
+type WorkType = 'home' | 'office' | 'outside' | null;
+
 type AttendanceRecord = {
 	id: string;
 	date: string;
 	is_attendance: boolean;
+	work_type: WorkType;
 };
 
 export function AttendanceManager() {
@@ -49,7 +52,7 @@ export function AttendanceManager() {
 		const fetchAttendanceRecords = async () => {
 			const { data, error } = await supabase
 				.from('attendance_records')
-				.select('id, date, is_attendance')
+				.select('id, date, is_attendance, work_type')
 				.eq('user_id', user.id);
 
 			if (error) {
@@ -70,7 +73,7 @@ export function AttendanceManager() {
 	};
 
 	// 出勤記録の登録・解除
-	const handleAttendance = async () => {
+	const handleAttendance = async (workType: WorkType = null) => {
 		if (!date || !user) return;
 
 		setLoading(true);
@@ -88,7 +91,10 @@ export function AttendanceManager() {
 				// 既存の記録を更新
 				const { error } = await supabase
 					.from('attendance_records')
-					.update({ is_attendance: !isAttended })
+					.update({
+						is_attendance: !isAttended,
+						work_type: !isAttended ? workType : null
+					})
 					.eq('id', existingRecord.id);
 
 				if (error) throw error;
@@ -100,7 +106,8 @@ export function AttendanceManager() {
 						{
 							user_id: user.id,
 							date: formattedDate,
-							is_attendance: true
+							is_attendance: true,
+							work_type: workType
 						}
 					]);
 
@@ -110,13 +117,23 @@ export function AttendanceManager() {
 			// 出勤記録を更新
 			const { data, error } = await supabase
 				.from('attendance_records')
-				.select('id, date, is_attendance')
+				.select('id, date, is_attendance, work_type')
 				.eq('user_id', user.id);
 
 			if (error) throw error;
 
 			setAttendanceRecords(data || []);
-			alert(isAttended ? '出勤記録を解除しました！' : '出勤記録を登録しました！');
+
+			if (isAttended) {
+				alert('出勤記録を解除しました！');
+			} else {
+				const workTypeText = {
+					home: '在宅勤務',
+					office: '出社',
+					outside: '外出'
+				}[workType!];
+				alert(`${workTypeText}として登録しました！`);
+			}
 
 		} catch (error) {
 			console.error('Error recording attendance:', error);
@@ -124,6 +141,14 @@ export function AttendanceManager() {
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	// 現在の勤務形態を取得
+	const getCurrentWorkType = (): WorkType => {
+		if (!date) return null;
+		const formattedDate = format(date, 'yyyy-MM-dd');
+		const record = attendanceRecords.find(record => record.date === formattedDate);
+		return record?.work_type ?? null;
 	};
 
 	// ログアウト
@@ -160,17 +185,53 @@ export function AttendanceManager() {
 					)}
 				</p>
 
-				<Button
-					onClick={handleAttendance}
-					disabled={!date || loading}
-					variant="success"
-					className={cn(
-						"w-full",
-						hasAttendanceRecord(date!) ? "button-attendance-cancel" : "button-attendance"
+				<div className="w-full grid grid-cols-4 gap-2">
+					<Button
+						onClick={() => handleAttendance('home')}
+						disabled={loading}
+						className={cn(
+							"text-sm py-1",
+							hasAttendanceRecord(date!) && getCurrentWorkType() === 'home'
+								? "button-work-home"
+								: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+						)}
+					>
+						{loading ? '...' : '在宅'}
+					</Button>
+					<Button
+						onClick={() => handleAttendance('office')}
+						disabled={loading}
+						className={cn(
+							"text-sm py-1",
+							hasAttendanceRecord(date!) && getCurrentWorkType() === 'office'
+								? "button-work-office"
+								: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+						)}
+					>
+						{loading ? '...' : '出社'}
+					</Button>
+					<Button
+						onClick={() => handleAttendance('outside')}
+						disabled={loading}
+						className={cn(
+							"text-sm py-1",
+							hasAttendanceRecord(date!) && getCurrentWorkType() === 'outside'
+								? "button-work-outside"
+								: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+						)}
+					>
+						{loading ? '...' : '外出'}
+					</Button>
+					{hasAttendanceRecord(date!) && (
+						<Button
+							onClick={() => handleAttendance()}
+							disabled={loading}
+							className="text-sm py-1 button-attendance-cancel"
+						>
+							{loading ? '...' : '解除'}
+						</Button>
 					)}
-				>
-					{loading ? '処理中...' : (hasAttendanceRecord(date!) ? '出勤解除' : '出勤登録')}
-				</Button>
+				</div>
 			</div>
 		</div>
 	);

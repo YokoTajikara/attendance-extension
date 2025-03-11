@@ -27,14 +27,32 @@
 	color: #0d0a0a;
 }
 
-/* 出勤登録ボタン */
-.button-attendance {
+/* 勤務形態ボタン */
+.button-work-home {
 	background-color: #0070b3 !important;
 	color: white !important;
 }
 
-.button-attendance:hover {
+.button-work-home:hover {
 	background-color: #005a8f !important;
+}
+
+.button-work-office {
+	background-color: #059669 !important;
+	color: white !important;
+}
+
+.button-work-office:hover {
+	background-color: #047857 !important;
+}
+
+.button-work-outside {
+	background-color: #7c3aed !important;
+	color: white !important;
+}
+
+.button-work-outside:hover {
+	background-color: #6d28d9 !important;
 }
 
 /* 出勤解除ボタン */
