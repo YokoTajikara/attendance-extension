@@ -22,6 +22,21 @@
 	width: 100%;
 }
 
+.calendar-container td.rdp-day_attended>button {
+	background-color: #ffca36;
+	color: #0d0a0a;
+}
+
+/* 出勤登録ボタン */
+.button-attendance {
+	background-color: #0070b3 !important;
+	color: white !important;
+}
+
+.button-attendance:hover {
+	background-color: #005a8f !important;
+}
+
 a {
 	font-weight: 500;
 	color: #646cff;

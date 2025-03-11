@@ -162,7 +162,7 @@ export function AttendanceManager() {
 					onClick={handleAttendance}
 					disabled={!date || loading}
 					variant="success"
-					className="w-full"
+					className="w-full button-attendance"
 				>
 					{loading ? '登録中...' : '出勤登録'}
 				</Button>

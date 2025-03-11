@@ -21,7 +21,7 @@ function Calendar({
 
 	// 出勤済みの日付のスタイルを定義
 	const modifiersClassNames = {
-		attended: "!text-red-500"
+		attended: "rdp-day_attended"
 	};
 
 	return (
@@ -50,7 +50,7 @@ function Calendar({
 					"h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-slate-100 rounded-md"
 				),
 				day_selected:
-					"bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50",
+					"bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50 day_attended",
 				day_today: "bg-slate-100",
 				day_outside: "text-slate-500 opacity-50",
 				day_disabled: "text-slate-500 opacity-50",
