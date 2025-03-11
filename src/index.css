@@ -37,6 +37,16 @@
 	background-color: #005a8f !important;
 }
 
+/* 出勤解除ボタン */
+.button-attendance-cancel {
+	background-color: #b91c1c !important;
+	color: white !important;
+}
+
+.button-attendance-cancel:hover {
+	background-color: #991b1b !important;
+}
+
 a {
 	font-weight: 500;
 	color: #646cff;

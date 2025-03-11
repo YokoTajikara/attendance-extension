@@ -4,6 +4,7 @@ import { ja } from 'date-fns/locale';
 import { Calendar } from './ui/Calendar';
 import { Button } from './ui/Button';
 import { supabase } from '../../lib/supabase';
+import { cn } from '../../lib/utils';
 
 type AttendanceRecord = {
 	id: string;
@@ -68,7 +69,7 @@ export function AttendanceManager() {
 		return attendanceRecords.some(record => record.date === formattedDate && record.is_attendance);
 	};
 
-	// 出勤記録の登録
+	// 出勤記録の登録・解除
 	const handleAttendance = async () => {
 		if (!date || !user) return;
 
@@ -76,6 +77,7 @@ export function AttendanceManager() {
 
 		try {
 			const formattedDate = format(date, 'yyyy-MM-dd');
+			const isAttended = hasAttendanceRecord(date);
 
 			// 既存の記録があるか確認
 			const existingRecord = attendanceRecords.find(
@@ -86,7 +88,7 @@ export function AttendanceManager() {
 				// 既存の記録を更新
 				const { error } = await supabase
 					.from('attendance_records')
-					.update({ is_attendance: true })
+					.update({ is_attendance: !isAttended })
 					.eq('id', existingRecord.id);
 
 				if (error) throw error;
@@ -114,11 +116,11 @@ export function AttendanceManager() {
 			if (error) throw error;
 
 			setAttendanceRecords(data || []);
-			alert('出勤記録を登録しました！');
+			alert(isAttended ? '出勤記録を解除しました！' : '出勤記録を登録しました！');
 
 		} catch (error) {
 			console.error('Error recording attendance:', error);
-			alert('出勤記録の登録中にエラーが発生しました。');
+			alert('処理中にエラーが発生しました。');
 		} finally {
 			setLoading(false);
 		}
@@ -162,9 +164,12 @@ export function AttendanceManager() {
 					onClick={handleAttendance}
 					disabled={!date || loading}
 					variant="success"
-					className="w-full button-attendance"
+					className={cn(
+						"w-full",
+						hasAttendanceRecord(date!) ? "button-attendance-cancel" : "button-attendance"
+					)}
 				>
-					{loading ? '登録中...' : '出勤登録'}
+					{loading ? '処理中...' : (hasAttendanceRecord(date!) ? '出勤解除' : '出勤登録')}
 				</Button>
 			</div>
 		</div>
