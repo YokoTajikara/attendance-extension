@@ -169,7 +169,7 @@ export function AttendanceManager() {
 				<Calendar
 					mode="single"
 					selected={date}
-					onSelect={setDate}
+					onSelect={(newDate) => setDate(newDate || date)}
 					modifiers={{
 						attended: (day) => hasAttendanceRecord(day),
 					}}
