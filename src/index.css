@@ -17,6 +17,11 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+/* カレンダーのボタンスタイル */
+.calendar-container td>button {
+	width: 100%;
+}
+
 a {
 	font-weight: 500;
 	color: #646cff;

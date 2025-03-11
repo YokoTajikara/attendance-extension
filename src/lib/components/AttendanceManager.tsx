@@ -138,7 +138,7 @@ export function AttendanceManager() {
 				</Button>
 			</div>
 
-			<div className="border rounded-md">
+			<div className="border rounded-md calendar-container">
 				<Calendar
 					mode="single"
 					selected={date}
