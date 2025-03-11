@@ -22,9 +22,19 @@
 	width: 100%;
 }
 
-.calendar-container td.rdp-day_attended>button {
+.calendar-container td.rdp-day_attended.work-type-home>button {
+	background-color: #0070b3;
+	color: white;
+}
+
+.calendar-container td.rdp-day_attended.work-type-office>button {
 	background-color: #ffca36;
-	color: #0d0a0a;
+	color: white;
+}
+
+.calendar-container td.rdp-day_attended.work-type-outside>button {
+	background-color: #7c3aed;
+	color: white;
 }
 
 /* 勤務形態ボタン */
@@ -38,12 +48,12 @@
 }
 
 .button-work-office {
-	background-color: #059669 !important;
+	background-color: #ffca36 !important;
 	color: white !important;
 }
 
 .button-work-office:hover {
-	background-color: #047857 !important;
+	background-color: #ffca36 !important;
 }
 
 .button-work-outside {

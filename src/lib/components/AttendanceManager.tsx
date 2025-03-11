@@ -170,8 +170,12 @@ export function AttendanceManager() {
 					mode="single"
 					selected={date}
 					onSelect={(newDate) => setDate(newDate || date)}
-					modifiers={{
-						attended: (day) => hasAttendanceRecord(day),
+					getWorkType={(day) => {
+						const formattedDate = format(day, 'yyyy-MM-dd');
+						const record = attendanceRecords.find(
+							record => record.date === formattedDate && record.is_attendance
+						);
+						return record?.work_type ?? null;
 					}}
 				/>
 			</div>

@@ -3,25 +3,31 @@ import { DayPicker } from "react-day-picker";
 import { ja } from "date-fns/locale";
 import { cn } from "../../utils";
 
+type WorkType = 'home' | 'office' | 'outside' | null;
+
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
-	attendanceDates?: Date[];
+	getWorkType?: (date: Date) => WorkType;
 };
 
 function Calendar({
 	className,
 	classNames,
 	showOutsideDays = true,
-	attendanceDates = [],
+	getWorkType,
 	...props
 }: CalendarProps) {
-	// 出勤済みの日付の modifier を作成
 	const modifiers = {
-		attended: attendanceDates,
+		home: (date: Date) => getWorkType?.(date) === 'home',
+		office: (date: Date) => getWorkType?.(date) === 'office',
+		outside: (date: Date) => getWorkType?.(date) === 'outside',
+		attended: (date: Date) => getWorkType?.(date) !== null,
 	};
 
-	// 出勤済みの日付のスタイルを定義
 	const modifiersClassNames = {
-		attended: "rdp-day_attended"
+		home: "work-type-home",
+		office: "work-type-office",
+		outside: "work-type-outside",
+		attended: "rdp-day_attended",
 	};
 
 	return (
@@ -50,9 +56,9 @@ function Calendar({
 					"h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-slate-100 rounded-md"
 				),
 				day_selected:
-					"bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50 day_attended",
+					"bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50",
 				day_today: "bg-slate-100",
-				day_outside: "text-slate-500 opacity-50",
+				day_outside: "text-slate-400",
 				day_disabled: "text-slate-500 opacity-50",
 				day_range_middle:
 					"aria-selected:bg-slate-100 aria-selected:text-slate-900",
