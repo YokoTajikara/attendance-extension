@@ -191,50 +191,54 @@ export function AttendanceManager() {
 					)}
 				</p>
 
-				<div className="w-full grid grid-cols-4 gap-2">
+				<div className="flex items-center space-x-2 w-full">
 					<Button
 						onClick={() => handleAttendance('home')}
 						disabled={loading}
+						size="sm"
 						className={cn(
-							"text-sm py-1",
+							"flex-1 text-xs py-1",
 							hasAttendanceRecord(date!) && getCurrentWorkType() === 'home'
 								? "button-work-home"
 								: "bg-gray-100 text-gray-600 hover:bg-gray-200"
 						)}
 					>
-						{loading ? '...' : '在宅'}
+						在宅
 					</Button>
 					<Button
 						onClick={() => handleAttendance('office')}
 						disabled={loading}
+						size="sm"
 						className={cn(
-							"text-sm py-1",
+							"flex-1 text-xs py-1",
 							hasAttendanceRecord(date!) && getCurrentWorkType() === 'office'
 								? "button-work-office"
 								: "bg-gray-100 text-gray-600 hover:bg-gray-200"
 						)}
 					>
-						{loading ? '...' : '出社'}
+						出社
 					</Button>
 					<Button
 						onClick={() => handleAttendance('outside')}
 						disabled={loading}
+						size="sm"
 						className={cn(
-							"text-sm py-1",
+							"flex-1 text-xs py-1",
 							hasAttendanceRecord(date!) && getCurrentWorkType() === 'outside'
 								? "button-work-outside"
 								: "bg-gray-100 text-gray-600 hover:bg-gray-200"
 						)}
 					>
-						{loading ? '...' : '外出'}
+						外出
 					</Button>
 					{hasAttendanceRecord(date!) && (
 						<Button
 							onClick={() => handleAttendance()}
 							disabled={loading}
-							className="text-sm py-1 button-attendance-cancel"
+							size="sm"
+							className="text-xs py-1 button-attendance-cancel"
 						>
-							{loading ? '...' : '解除'}
+							解除
 						</Button>
 					)}
 				</div>
