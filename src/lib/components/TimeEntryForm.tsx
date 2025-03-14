@@ -78,6 +78,29 @@ export function TimeEntryForm({ date, onSave }: TimeEntryFormProps) {
 		setEntries(entries.filter((_, i) => i !== index));
 	};
 
+	const handleRemoveAll = async () => {
+		setLoading(true);
+		try {
+			const { data: user } = await supabase.auth.getUser();
+			if (!user.user) return;
+
+			await supabase
+				.from('time_entries')
+				.delete()
+				.eq('user_id', user.user.id)
+				.eq('date', format(date, 'yyyy-MM-dd'));
+
+			setEntries([]);
+			onSave();
+			alert('工数を削除しました！');
+		} catch (error) {
+			console.error('Error deleting time entries:', error);
+			alert('削除中にエラーが発生しました。');
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	const handleSave = async () => {
 		setLoading(true);
 		try {
@@ -119,14 +142,27 @@ export function TimeEntryForm({ date, onSave }: TimeEntryFormProps) {
 		<div className="space-y-2">
 			<div className="flex items-center justify-between text-sm">
 				<span>合計時間: {totalHours}h</span>
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={handleAddEntry}
-					className="px-2 py-1"
-				>
-					＋ 追加
-				</Button>
+				<div className="flex items-center space-x-2">
+					{entries.length > 0 && (
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={handleRemoveAll}
+							disabled={loading}
+							className="px-2 py-1 text-red-500 hover:text-red-700"
+						>
+							全て削除
+						</Button>
+					)}
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={handleAddEntry}
+						className="px-2 py-1"
+					>
+						＋ 追加
+					</Button>
+				</div>
 			</div>
 
 			<div className="space-y-2">
