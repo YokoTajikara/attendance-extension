@@ -5,6 +5,8 @@ import { Calendar } from './ui/Calendar';
 import { Button } from './ui/Button';
 import { supabase } from '../../lib/supabase';
 import { cn } from '../../lib/utils';
+import { MonthlyTimeStats } from './MonthlyTimeStats';
+import { TimeEntryForm } from './TimeEntryForm';
 
 type WorkType = 'home' | 'office' | 'outside' | null;
 
@@ -236,6 +238,18 @@ export function AttendanceManager() {
 						</Button>
 					)}
 				</div>
+
+				{date && (
+					<div className="w-full border-t pt-4 mt-4">
+						<MonthlyTimeStats date={date} />
+						<TimeEntryForm
+							date={date}
+							onSave={() => {
+								// 工数保存後の処理（必要に応じて）
+							}}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);
