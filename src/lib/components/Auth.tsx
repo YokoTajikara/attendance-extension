@@ -2,16 +2,26 @@ import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Button } from './ui/Button';
 
-export function Auth() {
+export function Auth({ isPopup = true }: { isPopup?: boolean }) {
 	const [loading, setLoading] = useState(false);
 
 	async function handleGoogleLogin() {
+		if (isPopup) {
+			window.open(
+				chrome.runtime.getURL('login.html'),
+				'GoogleLogin',
+				'width=400,height=600'
+			);
+			return;
+		}
 		try {
 			setLoading(true);
 
+			console.log('[認証] スタート');
+
 			// Chrome拡張機能のリダイレクトURLを取得
 			const redirectUrl = chrome.identity.getRedirectURL();
-			console.log('リダイレクトURL:', redirectUrl);
+			console.log('[認証] リダイレクトURL:', redirectUrl);
 
 			// scopeにopenidを追加
 			const authUrl = `https://accounts.google.com/o/oauth2/auth?` +
@@ -20,16 +30,16 @@ export function Auth() {
 				`&redirect_uri=${encodeURIComponent(redirectUrl)}` +
 				`&scope=${encodeURIComponent('openid email profile')}`; // openidを追加
 
-			console.log('認証URL:', authUrl);
+			console.log('[認証] 認証URL:', authUrl);
 
 			chrome.identity.launchWebAuthFlow({
 				url: authUrl,
 				interactive: true
 			}, async (callbackUrl) => {
-				console.log('コールバック結果:', callbackUrl);
+				console.log('[認証] コールバックURL:', callbackUrl);
 
 				if (chrome.runtime.lastError || !callbackUrl) {
-					console.error('認証エラー:', chrome.runtime.lastError);
+					console.error('[認証] 認証エラー:', chrome.runtime.lastError);
 					alert('認証中にエラーが発生しました。');
 					setLoading(false);
 					return;
@@ -43,21 +53,33 @@ export function Auth() {
 
 				// id_tokenを取得
 				const idToken = params.get('id_token');
+				console.log('[認証] id_token:', idToken);
 
 				if (idToken) {
+					console.log('[認証] supabase.auth.signInWithIdToken 実行');
 					const { error } = await supabase.auth.signInWithIdToken({
 						provider: 'google',
 						token: idToken,
 					});
 
-					if (error) throw error;
+					if (error) {
+						console.error('[認証] supabase認証エラー:', error);
+						throw error;
+					}
+					console.log('[認証] supabase認証成功');
+					// ログインウィンドウの場合は閉じる
+					if (!isPopup) {
+						// ポップアップにログイン完了を通知
+						chrome.runtime.sendMessage({ type: 'LOGIN_SUCCESS' });
+						window.close();
+					}
 				}
 
 				setLoading(false);
 			});
 
 		} catch (error) {
-			console.error('認証エラー:', error);
+			console.error('[認証] 例外発生:', error);
 			alert('Google ログインでエラーが発生しました。');
 			setLoading(false);
 		}
