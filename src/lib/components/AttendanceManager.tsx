@@ -90,16 +90,21 @@ export function AttendanceManager() {
 			);
 
 			if (existingRecord) {
-				// 既存の記録を更新
-				const { error } = await supabase
-					.from('attendance_records')
-					.update({
-						is_attendance: !isAttended,
-						work_type: !isAttended ? workType : null
-					})
-					.eq('id', existingRecord.id);
-
-				if (error) throw error;
+				if (workType && isAttended) {
+					// 勤務形態のみ変更
+					const { error } = await supabase
+						.from('attendance_records')
+						.update({ work_type: workType })
+						.eq('id', existingRecord.id);
+					if (error) throw error;
+				} else {
+					// 解除
+					const { error } = await supabase
+						.from('attendance_records')
+						.update({ is_attendance: false, work_type: null })
+						.eq('id', existingRecord.id);
+					if (error) throw error;
+				}
 			} else {
 				// 新規記録を作成
 				const { error } = await supabase
@@ -112,7 +117,6 @@ export function AttendanceManager() {
 							work_type: workType
 						}
 					]);
-
 				if (error) throw error;
 			}
 
@@ -125,17 +129,6 @@ export function AttendanceManager() {
 			if (error) throw error;
 
 			setAttendanceRecords(data || []);
-
-			if (isAttended) {
-				alert('出勤記録を解除しました！');
-			} else {
-				const workTypeText = {
-					home: '在宅勤務',
-					office: '出社',
-					outside: '外出'
-				}[workType!];
-				alert(`${workTypeText}として登録しました！`);
-			}
 
 		} catch (error) {
 			console.error('Error recording attendance:', error);

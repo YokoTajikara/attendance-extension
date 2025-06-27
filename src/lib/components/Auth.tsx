@@ -89,7 +89,9 @@ export function Auth({ isPopup = true }: { isPopup?: boolean }) {
 		<div className="flex flex-col items-center justify-center h-full p-4 space-y-4">
 			<h1 className="text-2xl font-bold">出勤管理アプリ</h1>
 			<p className="text-sm text-center text-gray-600">
-				続行するには Google アカウントでログインしてください
+				続行するには Google アカウントでログインしてください<br />
+				ログインウィンドウが開いたら、ログインを完了してください<br />
+				ログイン後、再度アイコンをクリックすると勤怠管理ポップアップが表示されます
 			</p>
 			<Button
 				onClick={handleGoogleLogin}
