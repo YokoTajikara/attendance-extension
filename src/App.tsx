@@ -17,7 +17,18 @@ function App() {
 			setSession(session);
 		});
 
-		return () => subscription.unsubscribe();
+		// ログインウィンドウからのメッセージを受信したらリロード
+		const handler = (msg: any) => {
+			if (msg?.type === 'LOGIN_SUCCESS') {
+				window.location.reload();
+			}
+		};
+		chrome.runtime?.onMessage?.addListener(handler);
+
+		return () => {
+			subscription.unsubscribe();
+			chrome.runtime?.onMessage?.removeListener(handler);
+		};
 	}, []);
 
 	return (

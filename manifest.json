@@ -1,19 +1,20 @@
 {
 	"manifest_version": 3,
-	"name": "出勤管理アプリ",
+	"name": "勤怠管理",
 	"version": "1.0.0",
-	"description": "Google認証で出勤管理を行うChrome拡張",
+	"description": "勤怠管理拡張機能",
 	"action": {
 		"default_popup": "index.html",
 		"default_icon": {
 			"16": "icons/icon16.png",
+			"32": "icons/icon32.png",
 			"48": "icons/icon48.png",
 			"128": "icons/icon128.png"
 		}
 	},
 	"permissions": [
-		"identity",
-		"storage"
+		"storage",
+		"identity"
 	],
 	"host_permissions": [
 		"https://*.supabase.co/*",
@@ -21,7 +22,16 @@
 	],
 	"icons": {
 		"16": "icons/icon16.png",
+		"32": "icons/icon32.png",
 		"48": "icons/icon48.png",
 		"128": "icons/icon128.png"
+	},
+	"oauth2": {
+		"client_id": "986403064183-n1dgd9qp38dflqlve3lbp86o0ctg78ua.apps.googleusercontent.com",
+		"scopes": [
+			"openid",
+			"email",
+			"profile"
+		]
 	}
 }
